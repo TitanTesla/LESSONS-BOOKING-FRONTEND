@@ -82,6 +82,25 @@
           </button>
         </div>
       </main>
+       <!-- Cart and Checkout view -->
+       <div v-if="showCheckout">
+        <h2>Your Cart</h2>
+        <!-- Display all items in the cart -->
+        <div
+          v-for="(lesson, index) in cart"
+          :key="lesson._id"
+          class="cart-item"
+        >
+          <p><strong>Subject:</strong> {{ lesson.subject }}</p>
+          <p><strong>Location:</strong> {{ lesson.location }}</p>
+          <p><strong>Price:</strong> ${{ lesson.price }}</p>
+          <p><strong>Spaces:</strong> {{ lesson.spaces }}</p>
+          <!-- Button to remove item from cart -->
+          <button v-on:click="removeFromCart(index)">Remove</button>
+        </div>
+        <!-- Button to close the cart view -->
+        <button v-on:click="toggleCheckout">Close Cart</button>
+      </div>
     </div>
   </body>
 </html>
