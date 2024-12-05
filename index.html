@@ -128,5 +128,19 @@
         </button>
       </div>
     </div>
+    <script>
+      new Vue({
+        el: '#app',
+        data: {
+          sitename: 'Lessons Booking App', // Application name
+          lessons: [], // Array to store lessons data
+          cart: [], // Array to store cart items
+          showCheckout: false, // Boolean to toggle checkout view
+          order: { name: '', phone: '' }, // Object for storing user input in checkout
+          isFormValid: false, // Boolean to track form validation
+          sortAttribute: 'subject', // Attribute for sorting lessons
+          sortOrder: 'ascending' // Sorting order
+        },
+    </script>
   </body>
 </html>
