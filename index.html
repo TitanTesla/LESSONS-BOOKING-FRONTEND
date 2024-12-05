@@ -196,7 +196,22 @@ addToCart(lesson) {
             }
             this.cart.splice(index, 1) // Remove the item from the cart
           },
-         
+         // Toggle between lessons and cart views
+         toggleCheckout() {
+            if (this.showCheckout) {
+              // If closing the cart, revert spaces for all cart items
+              this.cart.forEach(cartItem => {
+                const lesson = this.lessons.find(
+                  item => item._id === cartItem._id
+                )
+                if (lesson) {
+                  lesson.spaces = cartItem.originalSpaces // Revert spaces to the original value
+                }
+              })
+              this.cart = [] // Clear the cart
+            }
+            this.showCheckout = !this.showCheckout // Toggle the view
+          },
       })
     </script>
   </body>
