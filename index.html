@@ -163,6 +163,15 @@
             return sorted
           }
         },
+        methods: {
+          // Fetch lessons data from the server
+          async fetchLessons() {
+            const response = await fetch('http://localhost:3000/lessons')
+            this.lessons = await response.json()
+          },
+
+         
+      })
     </script>
   </body>
 </html>
