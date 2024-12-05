@@ -63,6 +63,25 @@
           </select>
         </div>
       </header>
+       <!-- Lessons list displayed if not viewing cart -->
+       <main v-if="!showCheckout">
+        <div v-for="lesson in sortedLessons" :key="lesson._id" class="lesson">
+          <!-- Lesson details -->
+          <img
+            :src="`http://localhost:3000/images/${lesson.image}`"
+            alt="Lesson Image"
+            style="width: 100%; height: auto"
+          />
+          <h2>{{ lesson.subject }}</h2>
+          <p>Location: {{ lesson.location }}</p>
+          <p>Price: ${{ lesson.price }}</p>
+          <p>Spaces Available: {{ lesson.spaces }}</p>
+          <!-- Button to add a lesson to cart; disabled if no spaces available -->
+          <button v-on:click="addToCart(lesson)" :disabled="lesson.spaces <= 0">
+            Add to Cart
+          </button>
+        </div>
+      </main>
     </div>
   </body>
 </html>
