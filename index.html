@@ -141,6 +141,28 @@
           sortAttribute: 'subject', // Attribute for sorting lessons
           sortOrder: 'ascending' // Sorting order
         },
+        computed: {
+          // Calculate number of items in the cart
+          cartItemCount() {
+            return this.cart.length
+          },
+          // Sort lessons based on selected attribute and order
+          sortedLessons() {
+            let sorted = [...this.lessons].sort((a, b) => {
+              if (
+                this.sortAttribute === 'price' ||
+                this.sortAttribute === 'spaces'
+              ) {
+                return a[this.sortAttribute] - b[this.sortAttribute]
+              }
+              return a[this.sortAttribute].localeCompare(b[this.sortAttribute])
+            })
+            if (this.sortOrder === 'descending') {
+              sorted.reverse()
+            }
+            return sorted
+          }
+        },
     </script>
   </body>
 </html>
