@@ -212,6 +212,38 @@ addToCart(lesson) {
             }
             this.showCheckout = !this.showCheckout // Toggle the view
           },
+           // Validate checkout form inputs ""
+           validateInputs() {
+            const namePattern = /^[A-Za-z\s]+$/ // Pattern for a valid name (letters and spaces)
+            const phonePattern = /^\+971\d{9}$/ // Pattern for a valid phone number (+971 followed by 9 digits)
+
+            // Validate name
+            const isNameValid = namePattern.test(this.order.name)
+
+            // Check phone prefix
+            if (this.order.phone.length < 4) {
+              this.isFormValid = false // Incomplete phone number
+              return
+            }
+
+            if (!this.order.phone.startsWith('+971')) {
+              alert('Phone number must start with +971.')
+              this.isFormValid = false
+              return
+            }
+
+            // Check if phone number exceeds 9 digits after "+971"
+            const digitsAfterPrefix = this.order.phone.slice(4) // Extract digits after +971
+            if (digitsAfterPrefix.length > 9) {
+              alert('Phone number must only have 9 digits after +971.')
+              this.isFormValid = false
+              return
+            }
+
+            // Full validation for phone and name
+            this.isFormValid =
+              isNameValid && phonePattern.test(this.order.phone)
+          },
       })
     </script>
   </body>
