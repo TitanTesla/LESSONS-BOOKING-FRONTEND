@@ -100,6 +100,32 @@
         </div>
         <!-- Button to close the cart view -->
         <button v-on:click="toggleCheckout">Close Cart</button>
+        <!-- Checkout form -->
+        <h2>Checkout</h2>
+        <div class="form-group">
+          <label for="name">Name:</label>
+          <input
+            v-model="order.name"
+            id="name"
+            type="text"
+            placeholder="Your Name"
+            @input="validateInputs"
+          />
+        </div>
+        <div class="form-group">
+          <label for="phone">Phone:</label>
+          <input
+            v-model="order.phone"
+            id="phone"
+            type="text"
+            placeholder="Your Phone"
+            @input="validateInputs"
+          />
+        </div>
+        <!-- Submit order button; disabled if form is invalid -->
+        <button v-on:click="submitOrder" :disabled="!isFormValid">
+          Submit Order
+        </button>
       </div>
     </div>
   </body>
