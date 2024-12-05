@@ -63,8 +63,8 @@
           </select>
         </div>
       </header>
-       <!-- Lessons list displayed if not viewing cart -->
-       <main v-if="!showCheckout">
+      <!-- Lessons list displayed if not viewing cart -->
+      <main v-if="!showCheckout">
         <div v-for="lesson in sortedLessons" :key="lesson._id" class="lesson">
           <!-- Lesson details -->
           <img
@@ -82,8 +82,8 @@
           </button>
         </div>
       </main>
-       <!-- Cart and Checkout view -->
-       <div v-if="showCheckout">
+      <!-- Cart and Checkout view -->
+      <div v-if="showCheckout">
         <h2>Your Cart</h2>
         <!-- Display all items in the cart -->
         <div
@@ -169,8 +169,8 @@
             const response = await fetch('http://localhost:3000/lessons')
             this.lessons = await response.json()
           },
-// Add a lesson to the cart
-addToCart(lesson) {
+          // Add a lesson to the cart
+          addToCart(lesson) {
             const cartItem = this.cart.find(item => item._id === lesson._id)
             if (lesson.spaces > 0) {
               if (cartItem) {
@@ -196,8 +196,8 @@ addToCart(lesson) {
             }
             this.cart.splice(index, 1) // Remove the item from the cart
           },
-         // Toggle between lessons and cart views
-         toggleCheckout() {
+          // Toggle between lessons and cart views
+          toggleCheckout() {
             if (this.showCheckout) {
               // If closing the cart, revert spaces for all cart items
               this.cart.forEach(cartItem => {
@@ -212,8 +212,8 @@ addToCart(lesson) {
             }
             this.showCheckout = !this.showCheckout // Toggle the view
           },
-           // Validate checkout form inputs ""
-           validateInputs() {
+          // Validate checkout form inputs
+          validateInputs() {
             const namePattern = /^[A-Za-z\s]+$/ // Pattern for a valid name (letters and spaces)
             const phonePattern = /^\+971\d{9}$/ // Pattern for a valid phone number (+971 followed by 9 digits)
 
@@ -244,6 +244,38 @@ addToCart(lesson) {
             this.isFormValid =
               isNameValid && phonePattern.test(this.order.phone)
           },
+          // Submit order and clear cart
+          async submitOrder() {
+            if (this.isFormValid) {
+              const orderData = {
+                name: this.order.name,
+                phone: this.order.phone,
+                lessons: this.cart.map(item => ({
+                  lessonId: item._id,
+                  spaces: item.spaces
+                }))
+              }
+
+              await fetch('http://localhost:3000/orders', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(orderData)
+              })
+
+              alert('Order Submitted!')
+              this.cart = []
+              this.order.name = ''
+              this.order.phone = ''
+              this.showCheckout = false
+              await this.fetchLessons() // Refresh lessons data from server
+            } else {
+              alert('Please provide valid information.')
+            }
+          }
+        },
+        created() {
+          this.fetchLessons() // Fetch lessons when app loads
+        }
       })
     </script>
   </body>
