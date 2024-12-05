@@ -169,7 +169,33 @@
             const response = await fetch('http://localhost:3000/lessons')
             this.lessons = await response.json()
           },
+// Add a lesson to the cart
+addToCart(lesson) {
+            const cartItem = this.cart.find(item => item._id === lesson._id)
+            if (lesson.spaces > 0) {
+              if (cartItem) {
+                cartItem.spaces += 1 // Increment spaces in the cart
+              } else {
+                this.cart.push({
+                  ...lesson,
+                  originalSpaces: lesson.spaces,
+                  spaces: 1
+                })
+                // Store originalSpaces to track the initial availability
+              }
+              lesson.spaces-- // Temporarily decrease available spaces
+            }
+          },
 
+          // Remove a lesson from the cart
+          removeFromCart(index) {
+            const cartItem = this.cart[index]
+            const lesson = this.lessons.find(item => item._id === cartItem._id)
+            if (lesson) {
+              lesson.spaces += cartItem.spaces // Restore spaces for the removed item
+            }
+            this.cart.splice(index, 1) // Remove the item from the cart
+          },
          
       })
     </script>
