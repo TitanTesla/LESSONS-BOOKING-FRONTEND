@@ -212,38 +212,28 @@
             }
             this.showCheckout = !this.showCheckout // Toggle the view
           },
-          // Validate checkout form inputs
           validateInputs() {
-            const namePattern = /^[A-Za-z\s]+$/ // Pattern for a valid name (letters and spaces)
-            const phonePattern = /^\+971\d{9}$/ // Pattern for a valid phone number (+971 followed by 9 digits)
+              const namePattern = /^[A-Za-z\s]+$/; // Pattern for valid names
+              const phonePattern = /^\+971\d{9}$/; // Pattern for phone numbers
 
-            // Validate name
-            const isNameValid = namePattern.test(this.order.name)
+              // Validate name
+              const isNameValid = namePattern.test(this.order.name);
 
-            // Check phone prefix
-            if (this.order.phone.length < 4) {
-              this.isFormValid = false // Incomplete phone number
-              return
+              // Validate phone
+              const isPhoneValid = phonePattern.test(this.order.phone);
+
+              // Update form validity
+              this.isFormValid = isNameValid && isPhoneValid;
+
+              // If invalid phone number, show error
+              if (!isPhoneValid && this.order.phone.length > 0) {
+                 if (!this.order.phone.startsWith('+971')) {
+                    alert('Phone number must start with +971.');
+              }else if (this.order.phone.length > 13) { // +971 + 9 digits = 13 characters
+                  alert('Phone number must have exactly 9 digits after +971.');
+              }
             }
-
-            if (!this.order.phone.startsWith('+971')) {
-              alert('Phone number must start with +971.')
-              this.isFormValid = false
-              return
-            }
-
-            // Check if phone number exceeds 9 digits after "+971"
-            const digitsAfterPrefix = this.order.phone.slice(4) // Extract digits after +971
-            if (digitsAfterPrefix.length > 9) {
-              alert('Phone number must only have 9 digits after +971.')
-              this.isFormValid = false
-              return
-            }
-
-            // Full validation for phone and name
-            this.isFormValid =
-              isNameValid && phonePattern.test(this.order.phone)
-          },
+           },
           // Submit order and clear cart
           async submitOrder() {
             if (this.isFormValid) {
