@@ -4,15 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vue.js Lessons App</title>
-    <!-- Vue.js library -->
     <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
-    <!-- Font Awesome for cart icons -->
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
     />
     <style>
-      /* Minimal styling */
       body {
         font-family: Arial, sans-serif;
         margin: 20px;
@@ -41,13 +38,10 @@
   <body>
     <div id="app">
       <header>
-        <!-- App title -->
         <h1>{{ sitename }}</h1>
-        <!-- Button to toggle cart view; disabled if cart is empty -->
         <button v-on:click="toggleCheckout" :disabled="cartItemCount === 0">
           {{ cartItemCount }} <span class="fas fa-cart-plus"></span> View Cart
         </button>
-        <!-- Sorting options for lessons -->
         <div>
           <label for="sort">Sort by:</label>
           <select v-model="sortAttribute" id="sort">
@@ -63,10 +57,8 @@
           </select>
         </div>
       </header>
-      <!-- Lessons list displayed if not viewing cart -->
       <main v-if="!showCheckout">
         <div v-for="lesson in sortedLessons" :key="lesson._id" class="lesson">
-          <!-- Lesson details -->
           <img
             :src="`https://lessons-booking-backend-hr3a.onrender.com/images/${lesson.image}`"
             alt="Lesson Image"
@@ -76,31 +68,20 @@
           <p>Location: {{ lesson.location }}</p>
           <p>Price: ${{ lesson.price }}</p>
           <p>Spaces Available: {{ lesson.spaces }}</p>
-          <!-- Button to add a lesson to cart; disabled if no spaces available -->
           <button v-on:click="addToCart(lesson)" :disabled="lesson.spaces <= 0">
             Add to Cart
           </button>
         </div>
       </main>
-      <!-- Cart and Checkout view -->
       <div v-if="showCheckout">
         <h2>Your Cart</h2>
-        <!-- Display all items in the cart -->
-        <div
-          v-for="(lesson, index) in cart"
-          :key="lesson._id"
-          class="cart-item"
-        >
+        <div v-for="(lesson, index) in cart" :key="lesson._id" class="cart-item">
           <p><strong>Subject:</strong> {{ lesson.subject }}</p>
           <p><strong>Location:</strong> {{ lesson.location }}</p>
           <p><strong>Price:</strong> ${{ lesson.price }}</p>
-          <p><strong>Spaces:</strong> {{ lesson.spaces }}</p>
-          <!-- Button to remove item from cart -->
           <button v-on:click="removeFromCart(index)">Remove</button>
         </div>
-        <!-- Button to close the cart view -->
         <button v-on:click="toggleCheckout">Close Cart</button>
-        <!-- Checkout form -->
         <h2>Checkout</h2>
         <div class="form-group">
           <label for="name">Name:</label>
@@ -122,7 +103,6 @@
             @input="validateInputs"
           />
         </div>
-        <!-- Submit order button; disabled if form is invalid -->
         <button v-on:click="submitOrder" :disabled="!isFormValid">
           Submit Order
         </button>
@@ -132,147 +112,120 @@
       new Vue({
         el: '#app',
         data: {
-          sitename: 'Lessons Booking App', // Application name
-          lessons: [], // Array to store lessons data
-          cart: [], // Array to store cart items
-          showCheckout: false, // Boolean to toggle checkout view
-          order: { name: '', phone: '' }, // Object for storing user input in checkout
-          isFormValid: false, // Boolean to track form validation
-          sortAttribute: 'subject', // Attribute for sorting lessons
-          sortOrder: 'ascending' // Sorting order
+          sitename: 'Lessons Booking App',
+          lessons: [],
+          cart: [],
+          showCheckout: false,
+          order: { name: '', phone: '' },
+          isFormValid: false,
+          sortAttribute: 'subject',
+          sortOrder: 'ascending',
         },
         computed: {
-          // Calculate number of items in the cart
           cartItemCount() {
-            return this.cart.length
+            return this.cart.length;
           },
-          // Sort lessons based on selected attribute and order
           sortedLessons() {
             let sorted = [...this.lessons].sort((a, b) => {
-              if (
-                this.sortAttribute === 'price' ||
-                this.sortAttribute === 'spaces'
-              ) {
-                return a[this.sortAttribute] - b[this.sortAttribute]
+              if (this.sortAttribute === 'price' || this.sortAttribute === 'spaces') {
+                return a[this.sortAttribute] - b[this.sortAttribute];
               }
-              return a[this.sortAttribute].localeCompare(b[this.sortAttribute])
-            })
+              return a[this.sortAttribute].localeCompare(b[this.sortAttribute]);
+            });
             if (this.sortOrder === 'descending') {
-              sorted.reverse()
+              sorted.reverse();
             }
-            return sorted
-          }
+            return sorted;
+          },
         },
         methods: {
-          // Fetch lessons data from the server
           async fetchLessons() {
-            const response = await fetch('https://lessons-booking-backend-hr3a.onrender.com/lessons')
-            this.lessons = await response.json()
+            const response = await fetch('https://lessons-booking-backend-hr3a.onrender.com/lessons');
+            this.lessons = await response.json();
           },
-          // Add a lesson to the cart
           addToCart(lesson) {
-            const cartItem = this.cart.find(item => item._id === lesson._id)
+            const cartItem = this.cart.find((item) => item._id === lesson._id);
             if (lesson.spaces > 0) {
               if (cartItem) {
-                cartItem.spaces += 1 // Increment spaces in the cart
+                cartItem.spaces += 1;
               } else {
-                this.cart.push({
-                  ...lesson,
-                  originalSpaces: lesson.spaces,
-                  spaces: 1
-                })
-                // Store originalSpaces to track the initial availability
+                this.cart.push({ ...lesson, originalSpaces: lesson.spaces, spaces: 1 });
               }
-              lesson.spaces-- // Temporarily decrease available spaces
+              lesson.spaces--;
             }
           },
-
-          // Remove a lesson from the cart
           removeFromCart(index) {
-            const cartItem = this.cart[index]
-            const lesson = this.lessons.find(item => item._id === cartItem._id)
+            const cartItem = this.cart[index];
+            const lesson = this.lessons.find((item) => item._id === cartItem._id);
             if (lesson) {
-              lesson.spaces += cartItem.spaces // Restore spaces for the removed item
+              lesson.spaces += cartItem.spaces;
             }
-            this.cart.splice(index, 1) // Remove the item from the cart
+            this.cart.splice(index, 1);
           },
-          // Toggle between lessons and cart views
           toggleCheckout() {
             if (this.showCheckout) {
-              // If closing the cart, revert spaces for all cart items
-              this.cart.forEach(cartItem => {
-                const lesson = this.lessons.find(
-                  item => item._id === cartItem._id
-                )
+              this.cart.forEach((cartItem) => {
+                const lesson = this.lessons.find((item) => item._id === cartItem._id);
                 if (lesson) {
-                  lesson.spaces = cartItem.originalSpaces // Revert spaces to the original value
+                  lesson.spaces = cartItem.originalSpaces;
                 }
-              })
-              this.cart = [] // Clear the cart
+              });
+              this.cart = [];
             }
-            this.showCheckout = !this.showCheckout // Toggle the view
+            this.showCheckout = !this.showCheckout;
           },
           validateInputs() {
-  const namePattern = /^[A-Za-z\s]+$/; // Pattern for a valid name (letters and spaces)
-  const phonePattern = /^\+971\d{9}$/; // Pattern for a valid phone number (+971 followed by 9 digits)
+            const namePattern = /^[A-Za-z\s]+$/;
+            const phonePattern = /^\+971\d{9}$/;
 
-  // Validate name
-  const isNameValid = namePattern.test(this.order.name);
+            const isNameValid = namePattern.test(this.order.name);
+            const phoneInput = this.order.phone;
 
-  // Check phone prefix only after 4 characters
-  if (this.order.phone.length >= 4) {
-    if (!this.order.phone.startsWith('+971')) {
-      alert('Phone number must start with +971.');
-      this.isFormValid = false;
-      return;
-    }
-  }
+            if (phoneInput.length >= 4 && !phoneInput.startsWith('+971')) {
+              this.isFormValid = false;
+              return;
+            }
 
-  // Check if phone number exceeds 9 digits after "+971"
-  const digitsAfterPrefix = this.order.phone.slice(4); // Extract digits after +971
-  if (digitsAfterPrefix.length > 9) {
-    alert('Phone number must only have 9 digits after +971.');
-    this.isFormValid = false;
-    return;
-  }
+            const digitsAfterPrefix = phoneInput.slice(4);
+            if (digitsAfterPrefix.length > 9) {
+              this.isFormValid = false;
+              return;
+            }
 
-  // Full validation for phone and name
-  this.isFormValid =
-    isNameValid && phonePattern.test(this.order.phone);
-},
-          // Submit order and clear cart
+            this.isFormValid = isNameValid && phonePattern.test(phoneInput);
+          },
           async submitOrder() {
             if (this.isFormValid) {
               const orderData = {
                 name: this.order.name,
                 phone: this.order.phone,
-                lessons: this.cart.map(item => ({
+                lessons: this.cart.map((item) => ({
                   lessonId: item._id,
-                  spaces: item.spaces
-                }))
-              }
+                  spaces: item.spaces,
+                })),
+              };
 
               await fetch('https://lessons-booking-backend-hr3a.onrender.com/orders', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(orderData)
-              })
+                body: JSON.stringify(orderData),
+              });
 
-              alert('Order Submitted!')
-              this.cart = []
-              this.order.name = ''
-              this.order.phone = ''
-              this.showCheckout = false
-              await this.fetchLessons() // Refresh lessons data from server
+              alert('Order Submitted!');
+              this.cart = [];
+              this.order.name = '';
+              this.order.phone = '';
+              this.showCheckout = false;
+              await this.fetchLessons();
             } else {
-              alert('Please provide valid information.')
+              alert('Please provide valid information.');
             }
-          }
+          },
         },
         created() {
-          this.fetchLessons() // Fetch lessons when app loads
-        }
-      })
+          this.fetchLessons();
+        },
+      });
     </script>
   </body>
 </html>
